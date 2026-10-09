@@ -48,15 +48,20 @@ impl std::fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-/// How far a component goes toward a control, in OSCAL's vocabulary.
+/// How far a component goes toward a control: OSCAL's vocabulary, plus
+/// [`Status::Unmet`] for a control the component does not meet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {
     /// The component meets its part of the control.
     Implemented,
     /// The component meets some of its part.
     Partial,
-    /// The component does not meet it yet; work is intended.
+    /// The component does not meet it yet; work is scheduled.
     Planned,
+    /// The component does not meet it. Written as `not-implemented`, which
+    /// is outside OSCAL's suggested values, because `planned` would say more
+    /// than is true when no work is scheduled.
+    Unmet,
     /// The control is met another way.
     Alternative,
     /// The control does not apply to the component.
@@ -70,6 +75,7 @@ impl Status {
             Self::Implemented => "implemented",
             Self::Partial => "partial",
             Self::Planned => "planned",
+            Self::Unmet => "not-implemented",
             Self::Alternative => "alternative",
             Self::NotApplicable => "not-applicable",
         }
@@ -334,7 +340,7 @@ mod tests {
                         Requirement {
                             uuid: uuid(4),
                             control_id: "3.13.11".into(),
-                            status: Status::Planned,
+                            status: Status::Unmet,
                             description:
                                 "Approved algorithms on P-384 paths; no \"validated\" module."
                                     .into(),
@@ -360,7 +366,9 @@ mod tests {
         assert!(json.starts_with("{\"component-definition\":{\"uuid\":\""));
         assert!(json.contains("\"oscal-version\":\"1.1.2\""));
         assert!(json.contains("\"control-id\":\"3.13.11\""));
-        assert!(json.contains("{\"name\":\"implementation-status\",\"value\":\"planned\"}"));
+        assert!(
+            json.contains("{\"name\":\"implementation-status\",\"value\":\"not-implemented\"}")
+        );
         assert!(json.contains("{\"href\":\"docs/SECURITY_AUDIT.md\",\"rel\":\"reference\"}"));
         // Text is escaped, never interpolated raw.
         assert!(json.contains("no \\\"validated\\\" module."));
@@ -416,6 +424,7 @@ mod tests {
             Status::Implemented,
             Status::Partial,
             Status::Planned,
+            Status::Unmet,
             Status::Alternative,
             Status::NotApplicable,
         ]
@@ -428,6 +437,7 @@ mod tests {
                 "implemented",
                 "partial",
                 "planned",
+                "not-implemented",
                 "alternative",
                 "not-applicable"
             ]

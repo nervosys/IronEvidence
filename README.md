@@ -16,7 +16,7 @@ schema. The crate is not published.
 | `ComponentDefinition`, `Component` | A document and the software components it describes |
 | `ControlImplementation` | A component's statements against one catalog or profile |
 | `Requirement` | One statement: a control, a status, a description and where the evidence is |
-| `Status` | OSCAL's vocabulary: implemented, partial, planned, alternative, not-applicable |
+| `Status` | OSCAL's vocabulary (implemented, partial, planned, alternative, not-applicable) plus `Unmet`, written as `not-implemented` |
 | `to_oscal_json` | Deterministic OSCAL 1.1.2 component-definition JSON |
 
 The crate forbids unsafe code and has no dependencies. UUIDs and the

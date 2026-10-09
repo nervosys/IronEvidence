@@ -7,7 +7,7 @@ so one command produces the evidence an assessor's tooling reads.
 
 | Project | Where its mappings are today | Form |
 | --- | --- | --- |
-| IronCrypto | `ic_ontology::frameworks` (NIST SP 800-53 controls per algorithm, since 0.2.16) | Rust data |
+| IronCrypto | `ic_ontology::frameworks`, or `ic ontology controls --framework sp800-53 --json` (12 SP 800-53 controls: 2 unmet, 8 partial, 2 not applicable). Neither is a promised interface before 1.0. | Rust data or JSON |
 | IronPrivacyGuard | `docs/SECURITY_AUDIT.md`: the CMMC 2.0 (NIST SP 800-171 r2) table, the FIPS algorithm table and the MITRE ATT&CK table | Prose and Markdown tables |
 | IronSocketLayer | Its ontology (`isl-ontology`) and requirement identifiers (`REQ-*`) | Rust data |
 | IronKeys | `Provider` and `Validation`: custody class, exportability and declared module validation | Rust data |
@@ -22,7 +22,9 @@ checked against it.
    the project gives; it never infers or raises one.
 2. **Unmet stays unmet.** A control that needs a validated module (NIST
    SP 800-53 SC-13, SP 800-171 3.13.11) is not `implemented` on the strength
-   of approved algorithms or a planned validation.
+   of approved algorithms or a planned validation. A source's `Unmet` is
+   written as `not-implemented`, never as `planned`: IronCrypto's own table
+   records SC-13 and SC-12(2) as unmet.
 3. **Reproducible output.** The same input gives the same bytes: the caller
    supplies UUIDs and timestamps, and members are written in a fixed order.
 4. **Evidence is referenced, not copied.** A statement links to the test,
