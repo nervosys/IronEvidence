@@ -1,0 +1,52 @@
+# IronEvidence design notes
+
+IronEvidence emits OSCAL from every IronSecurity project's control mappings,
+so one command produces the evidence an assessor's tooling reads.
+
+## Sources to read
+
+| Project | Where its mappings are today | Form |
+| --- | --- | --- |
+| IronCrypto | `ic_ontology::frameworks` (NIST SP 800-53 controls per algorithm, since 0.2.16) | Rust data |
+| IronPrivacyGuard | `docs/SECURITY_AUDIT.md`: the CMMC 2.0 (NIST SP 800-171 r2) table, the FIPS algorithm table and the MITRE ATT&CK table | Prose and Markdown tables |
+| IronSocketLayer | Its ontology (`isl-ontology`) and requirement identifiers (`REQ-*`) | Rust data |
+| IronKeys | `Provider` and `Validation`: custody class, exportability and declared module validation | Rust data |
+
+IPG's mappings are prose. Before IronEvidence can read them they need a
+machine-readable form in IPG, with the audit document generated from it or
+checked against it.
+
+## Rules
+
+1. **A statement is a project's own claim.** IronEvidence records the status
+   the project gives; it never infers or raises one.
+2. **Unmet stays unmet.** A control that needs a validated module (NIST
+   SP 800-53 SC-13, SP 800-171 3.13.11) is not `implemented` on the strength
+   of approved algorithms or a planned validation.
+3. **Reproducible output.** The same input gives the same bytes: the caller
+   supplies UUIDs and timestamps, and members are written in a fixed order.
+4. **Evidence is referenced, not copied.** A statement links to the test,
+   document or commit that supports it.
+
+## Next steps
+
+1. Check the JSON against the OSCAL 1.1.2 component-definition schema and add
+   that check to CI.
+2. Decide how each project publishes its mappings (a data file per
+   repository, or a crate), then read IronCrypto's first.
+3. Give IPG's CMMC and FIPS tables a machine-readable source.
+4. Add a command-line tool that reads the sources and writes the documents.
+5. Derive stable UUIDs from project, catalog and control identifiers, so
+   documents are stable without a hand-kept list.
+
+## Open questions
+
+- Which OSCAL models are needed beyond component definitions: a system
+  security plan and a plan of action and milestones belong to the deploying
+  organization, not to these libraries.
+- Which catalogs: NIST SP 800-53 r5, SP 800-171 r2 (CMMC 2.0 Level 2), and
+  whether CNSA 2.0 and FIPS 140-3 requirements are expressed as controls.
+- Where `implementation-status` belongs. Component definitions carry it here
+  as a property; system security plans have a dedicated field.
+- Whether IronEvidence offers a commercial licence alongside
+  AGPL-3.0-or-later.

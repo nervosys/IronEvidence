@@ -1,0 +1,19 @@
+[package]
+name = "ironevidence"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.88"
+license = "AGPL-3.0-or-later"
+description = "Compliance evidence for the IronSecurity stack: OSCAL from each project's control mappings"
+repository = "https://github.com/nervosys/IronEvidence"
+readme = "README.md"
+keywords = ["oscal", "compliance", "nist", "evidence"]
+categories = ["cryptography"]
+# A scaffold: not for publication until it reads the projects' real mappings.
+publish = false
+
+[dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
