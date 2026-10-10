@@ -61,8 +61,11 @@ reader is written:
 
 ## Next steps
 
-1. Check the JSON against the OSCAL 1.1.2 component-definition schema and add
-   that check to CI.
+1. Done: the JSON validates against NIST's OSCAL 1.1.2 component-definition
+   schema, and CI runs that check. The schema's Unicode patterns are narrowed
+   to ASCII there, which is stricter. The `not-implemented` status value is a
+   property value the schema does not constrain; an assessor's tooling may
+   still expect one of OSCAL's five suggested states.
 2. Decide how each project publishes its mappings (a data file per
    repository, or a crate), then read IronCrypto's first.
 3. Give IPG's CMMC and FIPS tables a machine-readable source.

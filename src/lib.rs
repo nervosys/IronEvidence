@@ -9,8 +9,10 @@
 //! # Status
 //!
 //! This is a scaffold. It models a component's control statements and writes
-//! them as an OSCAL component definition. It does not yet read any project's
-//! mappings, and its output has not been checked against the OSCAL schema.
+//! them as an OSCAL component definition, which validates against NIST's
+//! OSCAL 1.1.2 component-definition JSON schema
+//! (`scripts/check-oscal-schema.py`). It does not yet read any project's
+//! mappings.
 //!
 //! # What evidence is not
 //!
@@ -28,7 +30,7 @@ pub const OSCAL_VERSION: &str = "1.1.2";
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum Error {
-    /// An identifier is not a lowercase RFC 4122 UUID.
+    /// An identifier is not a lowercase RFC 4122 UUID of version 4 or 5.
     InvalidUuid(String),
     /// A required text field is empty.
     Empty(&'static str),
@@ -39,7 +41,9 @@ pub enum Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::InvalidUuid(value) => write!(f, "not a lowercase UUID: {value}"),
+            Self::InvalidUuid(value) => {
+                write!(f, "not a lowercase version 4 or 5 UUID: {value}")
+            }
             Self::Empty(field) => write!(f, "{field} must not be empty"),
             Self::Duplicate(value) => write!(f, "duplicate identifier: {value}"),
         }
@@ -146,6 +150,9 @@ fn check_uuid(value: &str, seen: &mut Vec<String>) -> Result<(), Error> {
     let shaped = bytes.len() == 36
         && bytes.iter().enumerate().all(|(i, b)| match i {
             8 | 13 | 18 | 23 => *b == b'-',
+            // OSCAL accepts only version 4 or 5 UUIDs of the RFC 4122 variant.
+            14 => matches!(b, b'4' | b'5'),
+            19 => matches!(b, b'8' | b'9' | b'a' | b'b'),
             _ => b.is_ascii_digit() || (b'a'..=b'f').contains(b),
         });
     if !shaped {
@@ -401,6 +408,16 @@ mod tests {
         let mut upper = sample();
         upper.uuid = upper.uuid.to_uppercase().replace('0', "A");
         assert!(matches!(upper.validate(), Err(Error::InvalidUuid(_))));
+
+        // OSCAL's schema refuses other UUID versions and variants.
+        for wrong in [
+            "00000000-0000-1000-8000-000000000001",
+            "00000000-0000-4000-c000-000000000001",
+        ] {
+            let mut versioned = sample();
+            versioned.uuid = wrong.into();
+            assert!(matches!(versioned.validate(), Err(Error::InvalidUuid(_))));
+        }
 
         let mut reused = sample();
         reused.components[0].uuid = reused.uuid.clone();

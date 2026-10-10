@@ -5,9 +5,9 @@ written as [OSCAL](https://pages.nist.gov/OSCAL/), so an assessor's tooling can
 read them.
 
 **Status: scaffold.** IronEvidence models a component's control statements and
-writes them as an OSCAL component definition. It does not yet read any
-project's mappings, and its output has not been checked against the OSCAL
-schema. The crate is not published.
+writes them as an OSCAL component definition. Its example output validates
+against NIST's OSCAL 1.1.2 component-definition JSON schema. It does not yet
+read any project's mappings. The crate is not published.
 
 ## What is here
 
@@ -42,6 +42,15 @@ cargo fmt --all -- --check
 cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
 cargo test --locked --workspace --all-features
 python scripts/check-first-party-only.py --all-features
+```
+
+To check output against NIST's schema (needs Python's `jsonschema`; the schema
+is downloaded, not bundled):
+
+```text
+curl -sfLO https://github.com/usnistgov/OSCAL/releases/download/v1.1.2/oscal_component_schema.json
+cargo run --locked --example component > component.json
+python scripts/check-oscal-schema.py oscal_component_schema.json component.json
 ```
 
 ## Licence

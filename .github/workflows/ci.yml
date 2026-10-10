@@ -19,3 +19,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: python scripts/check-first-party-only.py --all-features
+      - run: python -m pip install jsonschema
+      - run: curl -sfLO https://github.com/usnistgov/OSCAL/releases/download/v1.1.2/oscal_component_schema.json
+      - run: cargo run --locked --example component > component.json
+        shell: bash
+      - run: python scripts/check-oscal-schema.py oscal_component_schema.json component.json
