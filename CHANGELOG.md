@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Reads IronCrypto's control mappings (`ic ontology controls --json`, schema
+  `ironcrypto-controls/1`) into an OSCAL component, keeping each control's
+  bearing, gap or reason and the IronCrypto version. Refuses other schemas
+  and any export that claims FIPS validation.
+- Added `uuid5`: name-based identifiers that are stable across runs.
 - Output now validates against NIST's OSCAL 1.1.2 component-definition JSON
   schema; `scripts/check-oscal-schema.py` and CI check it. UUIDs must be
   version 4 or 5, as OSCAL requires.

@@ -3,5 +3,14 @@
 version = 4
 
 [[package]]
+name = "ic-json"
+version = "0.2.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ad89c7a87fb94e419942b26b57e1b77ec1e62c0ae877a9d703fda1d08478e87"
+
+[[package]]
 name = "ironevidence"
 version = "0.0.0"
+dependencies = [
+ "ic-json",
+]

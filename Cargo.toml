@@ -9,10 +9,12 @@ repository = "https://github.com/nervosys/IronEvidence"
 readme = "README.md"
 keywords = ["oscal", "compliance", "nist", "evidence"]
 categories = ["cryptography"]
-# A scaffold: not for publication until it reads the projects' real mappings.
+# Not for publication until it reads every project's mappings.
 publish = false
 
 [dependencies]
+# IronCrypto's dependency-free JSON reader, for its controls export.
+ic-json = { version = ">=0.2.23, <0.3" }
 
 [lints.rust]
 unsafe_code = "forbid"

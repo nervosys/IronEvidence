@@ -8,11 +8,11 @@
 //!
 //! # Status
 //!
-//! This is a scaffold. It models a component's control statements and writes
-//! them as an OSCAL component definition, which validates against NIST's
-//! OSCAL 1.1.2 component-definition JSON schema
-//! (`scripts/check-oscal-schema.py`). It does not yet read any project's
-//! mappings.
+//! It models a component's control statements, writes them as an OSCAL
+//! component definition that validates against NIST's OSCAL 1.1.2
+//! component-definition JSON schema (`scripts/check-oscal-schema.py`), and
+//! reads IronCrypto's control mappings ([`ironcrypto`]). The other projects'
+//! mappings are not read yet.
 //!
 //! # What evidence is not
 //!
@@ -22,6 +22,9 @@
 //! certificate exists.
 
 use std::fmt::Write as _;
+
+pub mod ironcrypto;
+pub mod uuid5;
 
 /// The OSCAL version the output is structured for.
 pub const OSCAL_VERSION: &str = "1.1.2";

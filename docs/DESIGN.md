@@ -66,12 +66,14 @@ reader is written:
    to ASCII there, which is stricter. The `not-implemented` status value is a
    property value the schema does not constrain; an assessor's tooling may
    still expect one of OSCAL's five suggested states.
-2. Decide how each project publishes its mappings (a data file per
-   repository, or a crate), then read IronCrypto's first.
+2. Done for IronCrypto: `ironcrypto::Controls` reads its versioned export
+   and the result validates against the schema. Still to decide: how the
+   other projects publish their mappings (a data file per repository, or a
+   crate).
 3. Give IPG's CMMC and FIPS tables a machine-readable source.
 4. Add a command-line tool that reads the sources and writes the documents.
-5. Derive stable UUIDs from project, catalog and control identifiers, so
-   documents are stable without a hand-kept list.
+5. Done: `uuid5` derives stable version 5 UUIDs from project, catalog and
+   control names.
 
 ## Open questions
 
