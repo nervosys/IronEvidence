@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- IronEvidence is dual-licensed: AGPL-3.0-or-later, with a commercial licence
+  available from NERVOSYS. Added `LICENSE-COMMERCIAL.md`, `CLA.md` and
+  `CONTRIBUTING.md`.
 - Reads IronCrypto's control mappings (`ic ontology controls --json`, schema
   `ironcrypto-controls/1`) into an OSCAL component, keeping each control's
   bearing, gap or reason and the IronCrypto version. Refuses other schemas

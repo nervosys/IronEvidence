@@ -84,5 +84,3 @@ reader is written:
   whether CNSA 2.0 and FIPS 140-3 requirements are expressed as controls.
 - Where `implementation-status` belongs. Component definitions carry it here
   as a property; system security plans have a dedicated field.
-- Whether IronEvidence offers a commercial licence alongside
-  AGPL-3.0-or-later.
