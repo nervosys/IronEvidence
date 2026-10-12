@@ -1,0 +1,60 @@
+{
+  "schema": "ironsecurity-controls/1",
+  "project": "Example Project",
+  "description": "A fictional project, used only to test the reader.",
+  "version": "1.2.3",
+  "fipsValidated": false,
+  "controls": [
+    {
+      "framework": "sp800-53",
+      "id": "AU-9",
+      "title": "Protection of Audit Information",
+      "bearing": "The project writes an audit log that later readers must be able to trust.",
+      "compliance": {
+        "state": "met",
+        "evidence": ["tests/audit.rs", "docs/AUDIT.md"]
+      }
+    },
+    {
+      "framework": "sp800-53",
+      "id": "SC-12(2)",
+      "title": "Cryptographic Key Establishment and Management | Symmetric Keys",
+      "bearing": "Keys are generated and wrapped by the project.",
+      "compliance": {
+        "state": "partial",
+        "evidence": ["src/keys.rs"],
+        "gap": "Key generation does not use a validated module."
+      }
+    },
+    {
+      "framework": "sp800-53",
+      "id": "SC-13",
+      "title": "Cryptographic Protection",
+      "bearing": "The project performs the cryptography the control governs.",
+      "compliance": {
+        "state": "unmet",
+        "reason": "The control needs a FIPS 140 validated module, and there is none."
+      }
+    },
+    {
+      "framework": "sp800-53",
+      "id": "PE-3",
+      "title": "Physical Access Control",
+      "bearing": "The project is software.",
+      "compliance": {
+        "state": "not-applicable",
+        "reason": "Physical access is the deploying organization's to control."
+      }
+    },
+    {
+      "framework": "cmmc",
+      "id": "SC.L2-3.13.11",
+      "title": "Employ FIPS-validated cryptography when used to protect the confidentiality of CUI",
+      "bearing": "The project encrypts data that may be CUI.",
+      "compliance": {
+        "state": "unmet",
+        "reason": "No module in the project is FIPS 140 validated."
+      }
+    }
+  ]
+}

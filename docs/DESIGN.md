@@ -67,14 +67,15 @@ reader is written:
    property value the schema does not constrain; an assessor's tooling may
    still expect one of OSCAL's five suggested states.
 2. Done for IronCrypto: `ironcrypto::Controls` reads its versioned export
-   and the result validates against the schema. Still to decide: how the
-   other projects publish their mappings (a data file per repository, or a
-   crate).
+   and the result validates against the schema. The other projects publish
+   a data file per repository, schema `ironsecurity-controls/1`
+   ([FORMAT.md](FORMAT.md)), read by `controls::Mappings`. A file was chosen
+   over a crate because it needs no build, can be reviewed as text, and is
+   what IronCrypto's export already is. No project has written one yet.
 3. Give IPG's CMMC and FIPS tables a machine-readable source.
-4. Done for IronCrypto: the `ironevidence` command reads its export and
-   writes the component definition or a count of statuses. It takes one
-   source today; reading several and writing one document with a component
-   for each waits on step 2's decision.
+4. Done: the `ironevidence` command reads IronCrypto's export and any
+   number of `ironsecurity-controls/1` files, and writes one component
+   definition with a component for each, or a count of statuses.
 5. Done: `uuid5` derives stable version 5 UUIDs from project, catalog and
    control names.
 

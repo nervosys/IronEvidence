@@ -23,6 +23,7 @@
 
 use std::fmt::Write as _;
 
+pub mod controls;
 pub mod ironcrypto;
 pub mod uuid5;
 

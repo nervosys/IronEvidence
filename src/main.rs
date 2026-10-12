@@ -1,28 +1,36 @@
 //! `ironevidence`: write OSCAL from a project's control mappings.
 //!
 //! ```text
-//! ironevidence component --ironcrypto <controls.json> --last-modified <RFC 3339>
+//! ironevidence component [--ironcrypto <controls.json>] [--source <file>]...
+//!                        --last-modified <RFC 3339>
 //!                        [--framework sp800-53|cmmc]... [--output <file>]
-//! ironevidence summary   --ironcrypto <controls.json> [--framework ...]...
+//! ironevidence summary   [--ironcrypto <controls.json>] [--source <file>]...
+//!                        [--framework ...]...
 //! ```
 //!
-//! `controls.json` is the output of `ic ontology controls --json`. Nothing is
+//! `--ironcrypto` takes the output of `ic ontology controls --json`, and
+//! `--source` a project's `ironsecurity-controls/1` file. Nothing is
 //! fetched and the clock is not read: the caller supplies the timestamp, so
 //! the same input gives the same bytes.
 #![forbid(unsafe_code)]
 
 use ic_json::Json;
-use ironevidence::{Component, ComponentDefinition, Status, ironcrypto::Controls, uuid5};
+use ironevidence::{
+    Component, ComponentDefinition, Status, controls::Mappings, ironcrypto::Controls, uuid5,
+};
 
 const USAGE: &str = "usage:
-  ironevidence component --ironcrypto <controls.json> --last-modified <RFC 3339>
+  ironevidence component [--ironcrypto <controls.json>] [--source <file>]...
+                         --last-modified <RFC 3339>
                          [--framework sp800-53|cmmc]... [--output <file>]
-  ironevidence summary   --ironcrypto <controls.json> [--framework sp800-53|cmmc]...
+  ironevidence summary   [--ironcrypto <controls.json>] [--source <file>]...
+                         [--framework sp800-53|cmmc]...
 
-controls.json is the output of `ic ontology controls --json`. Without
---framework, both control frameworks are written. A statement is the
-project's own claim, with the status the project gives it; it is not an
-assessment.";
+--ironcrypto takes the output of `ic ontology controls --json`; --source takes
+a project's ironsecurity-controls/1 file and may be repeated. At least one is
+required, and each becomes one component. Without --framework, both control
+frameworks are written. A statement is the project's own claim, with the
+status the project gives it; it is not an assessment.";
 
 /// The control frameworks a component definition can carry.
 const FRAMEWORKS: [&str; 2] = ["sp800-53", "cmmc"];
@@ -41,6 +49,7 @@ enum Failure {
 struct Request {
     command: String,
     ironcrypto: Option<String>,
+    sources: Vec<String>,
     last_modified: Option<String>,
     frameworks: Vec<String>,
     output: Option<String>,
@@ -72,6 +81,13 @@ fn parse(args: &[String]) -> Result<Request, Failure> {
             "--ironcrypto" => once(&mut request.ironcrypto, value()?)?,
             "--last-modified" => once(&mut request.last_modified, value()?)?,
             "--output" => once(&mut request.output, value()?)?,
+            "--source" => {
+                let source = value()?;
+                if request.sources.contains(&source) {
+                    return Err(usage(format!("--source {source} was given twice")));
+                }
+                request.sources.push(source);
+            }
             "--framework" => {
                 let framework = value()?;
                 if !FRAMEWORKS.contains(&framework.as_str()) {
@@ -87,8 +103,10 @@ fn parse(args: &[String]) -> Result<Request, Failure> {
             other => return Err(usage(format!("unknown argument {other:?}"))),
         }
     }
-    if request.ironcrypto.is_none() {
-        return Err(usage("--ironcrypto <controls.json> is required".into()));
+    if request.ironcrypto.is_none() && request.sources.is_empty() {
+        return Err(usage(
+            "--ironcrypto <controls.json> or --source <file> is required".into(),
+        ));
     }
     match (request.command.as_str(), &request.last_modified) {
         ("component", None) => {
@@ -161,32 +179,69 @@ fn is_rfc3339(text: &str) -> bool {
     }
 }
 
-/// IronCrypto's component from the export at `path`, for the frameworks
-/// asked for.
-fn ironcrypto(
+/// One source as read: the name used in identifiers, the project version
+/// and the component.
+struct Source {
+    slug: String,
+    version: String,
+    component: Component,
+}
+
+/// Every source's component, IronCrypto's first, for the frameworks asked
+/// for.
+fn sources(
     request: &Request,
     read: &dyn Fn(&str) -> std::io::Result<String>,
-) -> Result<(Controls, Component), Failure> {
-    let path = request.ironcrypto.as_deref().unwrap_or_default();
-    let text = read(path).map_err(|e| Failure::Input(format!("{path}: {e}")))?;
-    let controls =
-        Controls::from_json(&text).map_err(|e| Failure::Input(format!("{path}: {e}")))?;
+) -> Result<Vec<Source>, Failure> {
     let frameworks: Vec<&str> = if request.frameworks.is_empty() {
         FRAMEWORKS.to_vec()
     } else {
         request.frameworks.iter().map(String::as_str).collect()
     };
-    let component = controls
-        .component(&frameworks)
-        .filter(|component| !component.implementations.is_empty())
-        .ok_or_else(|| {
-            Failure::Input(format!("{path}: no controls of the requested frameworks"))
-        })?;
-    Ok((controls, component))
+    let text = |path: &str| read(path).map_err(|e| Failure::Input(format!("{path}: {e}")));
+    let none =
+        |path: &str| Failure::Input(format!("{path}: no controls of the requested frameworks"));
+    let mut found: Vec<Source> = Vec::new();
+    if let Some(path) = request.ironcrypto.as_deref() {
+        let controls = Controls::from_json(&text(path)?)
+            .map_err(|e| Failure::Input(format!("{path}: {e}")))?;
+        let component = controls
+            .component(&frameworks)
+            .filter(|component| !component.implementations.is_empty())
+            .ok_or_else(|| none(path))?;
+        found.push(Source {
+            slug: "ironcrypto".into(),
+            version: controls.version,
+            component,
+        });
+    }
+    for path in &request.sources {
+        let mappings = Mappings::from_json(&text(path)?)
+            .map_err(|e| Failure::Input(format!("{path}: {e}")))?;
+        let slug = mappings.slug();
+        // Two files for one project would be two components with one
+        // identifier.
+        if found.iter().any(|source| source.slug == slug) {
+            return Err(Failure::Input(format!(
+                "{path}: {} is described by more than one source",
+                mappings.project
+            )));
+        }
+        let component = mappings
+            .component(&frameworks)
+            .filter(|component| !component.implementations.is_empty())
+            .ok_or_else(|| none(path))?;
+        found.push(Source {
+            slug,
+            version: mappings.version,
+            component,
+        });
+    }
+    Ok(found)
 }
 
-/// Counts of each status per catalog, as JSON.
-fn summary(component: &Component) -> String {
+/// Counts of each status per catalog, for one component.
+fn summary(component: &Component) -> Json {
     const STATUSES: [Status; 6] = [
         Status::Implemented,
         Status::Partial,
@@ -229,22 +284,46 @@ fn summary(component: &Component) -> String {
         ("version", Json::str(component.version.as_str())),
         ("catalogs", Json::Array(catalogs)),
     ])
-    .to_string()
 }
 
 /// Run one command and return what it prints.
 fn run(args: &[String], read: &dyn Fn(&str) -> std::io::Result<String>) -> Result<String, Failure> {
     let request = parse(args)?;
-    let (controls, component) = ironcrypto(&request, read)?;
+    let sources = sources(&request, read)?;
     if request.command == "summary" {
-        return Ok(summary(&component));
+        let components = sources.iter().map(|s| summary(&s.component)).collect();
+        return Ok(Json::object([("components", Json::Array(components))]).to_string());
     }
+    // IronCrypto alone keeps the document it has always had; several
+    // sources make one document named for all of them.
+    let (uuid, title, version) = match &sources[..] {
+        [only] if only.slug == "ironcrypto" => (
+            uuid5::id("ironsecurity/component-definition/ironcrypto"),
+            "IronCrypto component definition".to_string(),
+            only.version.clone(),
+        ),
+        many => {
+            let slugs: Vec<&str> = many.iter().map(|s| s.slug.as_str()).collect();
+            let versions: Vec<String> = many
+                .iter()
+                .map(|s| format!("{}-{}", s.slug, s.version))
+                .collect();
+            (
+                uuid5::id(&format!(
+                    "ironsecurity/component-definition/{}",
+                    slugs.join("+")
+                )),
+                "IronSecurity component definition".to_string(),
+                versions.join("+"),
+            )
+        }
+    };
     let definition = ComponentDefinition {
-        uuid: uuid5::id("ironsecurity/component-definition/ironcrypto"),
-        title: "IronCrypto component definition".into(),
-        version: controls.version.clone(),
+        uuid,
+        title,
+        version,
         last_modified: request.last_modified.clone().unwrap_or_default(),
-        components: vec![component],
+        components: sources.into_iter().map(|s| s.component).collect(),
     };
     definition
         .to_oscal_json()
@@ -288,11 +367,13 @@ mod tests {
     use super::*;
 
     const EXPORT: &str = include_str!("../tests/data/ironcrypto-controls-0.2.23.json");
+    const EXAMPLE: &str = include_str!("../tests/data/example-controls.json");
 
     fn call(args: &[&str]) -> Result<String, Failure> {
         let args: Vec<String> = args.iter().map(|a| a.to_string()).collect();
         run(&args, &|path| match path {
             "controls.json" => Ok(EXPORT.to_string()),
+            "example.json" | "again.json" => Ok(EXAMPLE.to_string()),
             "validated.json" => {
                 Ok(EXPORT.replacen("\"fipsValidated\":false", "\"fipsValidated\":true", 1))
             }
@@ -349,7 +430,8 @@ mod tests {
     #[test]
     fn the_summary_counts_what_the_project_states() {
         let text = call(&["summary", "--ironcrypto", "controls.json"]).unwrap();
-        let json = ic_json::parse(&text).unwrap();
+        let all = ic_json::parse(&text).unwrap();
+        let json = &all.get("components").and_then(Json::as_array).unwrap()[0];
         assert_eq!(
             json.get("component").and_then(Json::as_str),
             Some("IronCrypto")
@@ -376,6 +458,61 @@ mod tests {
             .collect();
         // SP 800-53, then CMMC: none implemented.
         assert_eq!(counts, [[12, 0, 8, 2, 2], [7, 0, 5, 1, 1]]);
+    }
+
+    #[test]
+    fn several_sources_make_one_document_with_a_component_each() {
+        let time = ["--last-modified", "2026-10-10T00:00:00Z"];
+        let both = [
+            "component",
+            "--ironcrypto",
+            "controls.json",
+            "--source",
+            "example.json",
+        ];
+        let text = call(&[&both[..], &time].concat()).unwrap();
+        let json = ic_json::parse(&text).unwrap();
+        let definition = json.get("component-definition").unwrap();
+        let metadata = definition.get("metadata").unwrap();
+        assert_eq!(
+            metadata.get("title").and_then(Json::as_str),
+            Some("IronSecurity component definition")
+        );
+        assert_eq!(
+            metadata.get("version").and_then(Json::as_str),
+            Some("ironcrypto-0.2.23+example-project-1.2.3")
+        );
+        let titles: Vec<&str> = definition
+            .get("components")
+            .and_then(Json::as_array)
+            .unwrap()
+            .iter()
+            .map(|c| c.get("title").and_then(Json::as_str).unwrap())
+            .collect();
+        assert_eq!(titles, ["IronCrypto", "Example Project"]);
+        // A project's file alone, and its summary.
+        let alone = ["--source", "example.json"];
+        call(&[&["component"][..], &alone, &time].concat()).unwrap();
+        let summary = call(&[&["summary"][..], &alone].concat()).unwrap();
+        assert!(summary.contains("\"component\":\"Example Project\""));
+        assert!(summary.contains("\"not-implemented\":1"));
+        // One project described twice is refused; so is the same file twice.
+        assert!(matches!(
+            call(&[&both[..], &["--source", "again.json"], &time].concat()),
+            Err(Failure::Input(_))
+        ));
+        assert!(usage(
+            &[&both[..], &["--source", "example.json"], &time].concat()
+        ));
+        // IronCrypto's own form is not the shared form, and the reverse.
+        assert!(matches!(
+            call(&[&["component", "--source", "controls.json"][..], &time].concat()),
+            Err(Failure::Input(_))
+        ));
+        assert!(matches!(
+            call(&[&["component", "--ironcrypto", "example.json"][..], &time].concat()),
+            Err(Failure::Input(_))
+        ));
     }
 
     #[test]

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Added the shared mappings format `ironsecurity-controls/1`
+  (`docs/FORMAT.md`) and its reader, `controls::Mappings`. A partial control
+  must name its gap, a met or partial control its evidence, and a file that
+  claims FIPS validation or uses an identifier OSCAL cannot carry is refused.
+  No project ships a file yet.
+- `ironevidence` takes `--source <file>` for such files, repeatable and
+  combinable with `--ironcrypto`, and writes one document with a component for
+  each. `summary` now prints a `components` list.
 - Added the `ironevidence` command: `component` writes IronCrypto's control
   mappings as an OSCAL component definition and `summary` counts statements
   by status. The timestamp is an argument and nothing is fetched.
