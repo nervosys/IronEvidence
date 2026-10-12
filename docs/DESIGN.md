@@ -8,13 +8,12 @@ so one command produces the evidence an assessor's tooling reads.
 | Project | Where its mappings are today | Form |
 | --- | --- | --- |
 | IronCrypto | `ic_ontology::frameworks`, or `ic ontology controls --framework sp800-53 --json` (12 SP 800-53 controls: 2 unmet, 8 partial, 2 not applicable). Neither is a promised interface before 1.0. | Rust data or JSON |
-| IronPrivacyGuard | `docs/SECURITY_AUDIT.md`: the CMMC 2.0 (NIST SP 800-171 r2) table, the FIPS algorithm table and the MITRE ATT&CK table | Prose and Markdown tables |
+| IronPrivacyGuard | `docs/controls.json`: 17 CMMC 2.0 statements in the shared form (`ironsecurity-controls/1`). Its FIPS algorithm table and MITRE ATT&CK table remain prose in `docs/SECURITY_AUDIT.md` | JSON |
 | IronSocketLayer | Its ontology (`isl-ontology`) and requirement identifiers (`REQ-*`) | Rust data |
 | IronKeys | `Provider` and `Validation`: custody class, exportability and declared module validation | Rust data |
 
-IPG's mappings are prose. Before IronEvidence can read them they need a
-machine-readable form in IPG, with the audit document generated from it or
-checked against it.
+IronSocketLayer and IronKeys have no control mappings yet; what they hold
+is the data a mapping would cite.
 
 ## Rules
 
