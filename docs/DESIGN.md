@@ -10,10 +10,10 @@ so one command produces the evidence an assessor's tooling reads.
 | IronCrypto | `ic_ontology::frameworks`, or `ic ontology controls --framework sp800-53 --json` (12 SP 800-53 controls: 2 unmet, 8 partial, 2 not applicable). Neither is a promised interface before 1.0. | Rust data or JSON |
 | IronPrivacyGuard | `docs/controls.json`: 17 CMMC 2.0 statements in the shared form (`ironsecurity-controls/1`). Its FIPS algorithm table and MITRE ATT&CK table remain prose in `docs/SECURITY_AUDIT.md` | JSON |
 | IronSocketLayer | Its ontology (`isl-ontology`) and requirement identifiers (`REQ-*`) | Rust data |
-| IronKeys | `Provider` and `Validation`: custody class, exportability and declared module validation | Rust data |
+| IronKeys | `docs/controls.json`: SP 800-53 and CMMC 2.0 statements in the shared form | JSON |
 
-IronSocketLayer and IronKeys have no control mappings yet; what they hold
-is the data a mapping would cite.
+IronSocketLayer has no control mappings yet; its ontology and requirement
+identifiers are the data a mapping would cite.
 
 ## Rules
 
@@ -71,7 +71,8 @@ reader is written:
    ([FORMAT.md](FORMAT.md)), read by `controls::Mappings`. A file was chosen
    over a crate because it needs no build, can be reviewed as text, and is
    what IronCrypto's export already is. IronPrivacyGuard has written one
-   (`docs/controls.json`, CMMC 2.0); IronSocketLayer and IronKeys have not.
+   (`docs/controls.json`, CMMC 2.0), and so has IronKeys; IronSocketLayer
+   has not.
 3. Done for CMMC: IPG's `docs/controls.json`. Its FIPS algorithm table
    and ATT&CK table are not controls and have no machine-readable form.
 4. Done: the `ironevidence` command reads IronCrypto's export and any

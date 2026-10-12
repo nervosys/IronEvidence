@@ -436,6 +436,25 @@ mod tests {
     }
 
     #[test]
+    fn reads_ironkeys_released_file() {
+        let mappings =
+            Mappings::from_json(include_str!("../tests/data/ironkeys-controls-0.1.2.json"))
+                .unwrap();
+        assert_eq!(mappings.slug(), "ironkeys");
+        let component = mappings.component(&["sp800-53", "cmmc"]).unwrap();
+        // One partial and one not-implemented in each catalog; nothing met.
+        for implementation in &component.implementations {
+            let statuses: Vec<Status> = implementation
+                .requirements
+                .iter()
+                .map(|r| r.status)
+                .collect();
+            assert_eq!(statuses, [Status::Partial, Status::Unmet]);
+        }
+        assert_eq!(component.implementations.len(), 2);
+    }
+
+    #[test]
     fn a_file_that_breaks_a_rule_is_refused() {
         let with = |from: &str, to: &str| {
             assert!(EXAMPLE.contains(from), "{from}");
