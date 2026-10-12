@@ -6,7 +6,8 @@
   (`docs/FORMAT.md`) and its reader, `controls::Mappings`. A partial control
   must name its gap, a met or partial control its evidence, and a file that
   claims FIPS validation or uses an identifier OSCAL cannot carry is refused.
-  IronPrivacyGuard and IronKeys ship one; their files are test fixtures.
+  IronPrivacyGuard, IronKeys and IronSocketLayer ship one; their files are test
+  fixtures.
 - `ironevidence` takes `--source <file>` for such files, repeatable and
   combinable with `--ironcrypto`, and writes one document with a component for
   each. `summary` now prints a `components` list.

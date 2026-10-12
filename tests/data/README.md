@@ -12,6 +12,10 @@ fixture and not maintained in this repository.
 `ironkeys-controls-0.1.2.json` is IronKeys' `docs/controls.json` at 0.1.2,
 unmodified, kept here on the same terms.
 
+`ironsocketlayer-controls-0.5.0.json` is IronSocketLayer's
+`docs/controls.json` at commit `09bf224` (version 0.5.0), unmodified, kept here
+on the same terms.
+
 `example-controls.json` is a fictional project's mappings in the shared form
 (schema `ironsecurity-controls/1`), written for the reader's tests. It
 describes no real project.

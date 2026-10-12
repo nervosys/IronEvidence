@@ -455,6 +455,41 @@ mod tests {
     }
 
     #[test]
+    fn reads_ironsocketlayers_released_file() {
+        let mappings = Mappings::from_json(include_str!(
+            "../tests/data/ironsocketlayer-controls-0.5.0.json"
+        ))
+        .unwrap();
+        assert_eq!(mappings.slug(), "ironsocketlayer");
+        let component = mappings.component(&["sp800-53", "cmmc"]).unwrap();
+        let statuses = |i: usize| -> Vec<(String, Status)> {
+            component.implementations[i]
+                .requirements
+                .iter()
+                .map(|r| (r.control_id.clone(), r.status))
+                .collect()
+        };
+        let pair = |id: &str, status| (id.to_string(), status);
+        assert_eq!(
+            statuses(0),
+            [
+                pair("sc-8", Status::Partial),
+                pair("sc-8.1", Status::Partial),
+                pair("sc-13", Status::Unmet),
+                pair("sc-23", Status::Implemented)
+            ]
+        );
+        assert_eq!(
+            statuses(1),
+            [
+                pair("SC.L2-3.13.8", Status::Partial),
+                pair("SC.L2-3.13.11", Status::Unmet),
+                pair("SC.L2-3.13.15", Status::Implemented)
+            ]
+        );
+    }
+
+    #[test]
     fn a_file_that_breaks_a_rule_is_refused() {
         let with = |from: &str, to: &str| {
             assert!(EXAMPLE.contains(from), "{from}");
