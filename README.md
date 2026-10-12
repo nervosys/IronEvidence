@@ -55,11 +55,11 @@ a component for each:
 ironevidence component --ironcrypto controls.json --source ipg-controls.json     --last-modified 2026-10-10T00:00:00Z --output stack.json
 ```
 
-No project ships such a file yet: IronPrivacyGuard's mappings are still prose
-in its security audit, and IronSocketLayer and IronKeys have none. The reader
-is tested against a fictional example. Writing each file is that project's
-maintainers' work, because every entry is a claim the project makes about
-itself.
+IronPrivacyGuard ships one, `docs/controls.json` in its repository: 17 CMMC
+2.0 statements (7 implemented, 9 partial, 1 not-implemented). IronSocketLayer
+and IronKeys have none yet. The reader is tested against IPG's file at 0.2.0
+and a fictional example. Writing each file is that project's maintainers'
+work, because every entry is a claim the project makes about itself.
 
 From IronCrypto 0.2.23 this gives 12 NIST SP 800-53 statements (8 partial, 2
 not-implemented, 2 not-applicable) and 7 CMMC 2.0 statements (5 partial, 1

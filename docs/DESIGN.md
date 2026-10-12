@@ -71,8 +71,10 @@ reader is written:
    a data file per repository, schema `ironsecurity-controls/1`
    ([FORMAT.md](FORMAT.md)), read by `controls::Mappings`. A file was chosen
    over a crate because it needs no build, can be reviewed as text, and is
-   what IronCrypto's export already is. No project has written one yet.
-3. Give IPG's CMMC and FIPS tables a machine-readable source.
+   what IronCrypto's export already is. IronPrivacyGuard has written one
+   (`docs/controls.json`, CMMC 2.0); IronSocketLayer and IronKeys have not.
+3. Done for CMMC: IPG's `docs/controls.json`. Its FIPS algorithm table
+   and ATT&CK table are not controls and have no machine-readable form.
 4. Done: the `ironevidence` command reads IronCrypto's export and any
    number of `ironsecurity-controls/1` files, and writes one component
    definition with a component for each, or a count of statuses.

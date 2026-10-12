@@ -8,8 +8,8 @@ IronCrypto is the exception: it publishes its mappings through
 `ic ontology controls --json`, in its own schema (`ironcrypto-controls/1`),
 which `ironevidence::ironcrypto` reads.
 
-No project ships a file in this form yet. `tests/data/example-controls.json`
-is a fictional example used by the tests.
+IronPrivacyGuard ships one as `docs/controls.json`. A copy at IPG 0.2.0 and
+a fictional example are in `tests/data` for the tests.
 
 ## Who writes it
 

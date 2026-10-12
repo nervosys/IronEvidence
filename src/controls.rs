@@ -409,6 +409,33 @@ mod tests {
     }
 
     #[test]
+    fn reads_ironprivacyguards_released_file() {
+        let mappings =
+            Mappings::from_json(include_str!("../tests/data/ipg-controls-0.2.0.json")).unwrap();
+        assert_eq!(mappings.project, "IronPrivacyGuard");
+        let component = mappings.component(&["sp800-53", "cmmc"]).unwrap();
+        // CMMC only, and IPG's own counts.
+        assert_eq!(component.implementations.len(), 1);
+        let statements = &component.implementations[0].requirements;
+        let count = |status| statements.iter().filter(|r| r.status == status).count();
+        assert_eq!(
+            [
+                statements.len(),
+                count(Status::Implemented),
+                count(Status::Partial),
+                count(Status::Unmet)
+            ],
+            [17, 7, 9, 1]
+        );
+        // The practice that needs a validated module is not met.
+        let fips = statements
+            .iter()
+            .find(|r| r.control_id == "SC.L2-3.13.11")
+            .unwrap();
+        assert_eq!(fips.status, Status::Unmet);
+    }
+
+    #[test]
     fn a_file_that_breaks_a_rule_is_refused() {
         let with = |from: &str, to: &str| {
             assert!(EXAMPLE.contains(from), "{from}");
