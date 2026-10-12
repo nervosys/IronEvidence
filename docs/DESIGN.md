@@ -71,7 +71,10 @@ reader is written:
    other projects publish their mappings (a data file per repository, or a
    crate).
 3. Give IPG's CMMC and FIPS tables a machine-readable source.
-4. Add a command-line tool that reads the sources and writes the documents.
+4. Done for IronCrypto: the `ironevidence` command reads its export and
+   writes the component definition or a count of statuses. It takes one
+   source today; reading several and writing one document with a component
+   for each waits on step 2's decision.
 5. Done: `uuid5` derives stable version 5 UUIDs from project, catalog and
    control names.
 

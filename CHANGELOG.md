@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added the `ironevidence` command: `component` writes IronCrypto's control
+  mappings as an OSCAL component definition and `summary` counts statements
+  by status. The timestamp is an argument and nothing is fetched.
 - IronEvidence is dual-licensed: AGPL-3.0-or-later, with a commercial licence
   available from NERVOSYS. Added `LICENSE-COMMERCIAL.md`, `CLA.md` and
   `CONTRIBUTING.md`.

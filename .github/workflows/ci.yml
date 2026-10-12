@@ -24,6 +24,5 @@ jobs:
       - run: cargo run --locked --example component > component.json
         shell: bash
       - run: python scripts/check-oscal-schema.py oscal_component_schema.json component.json
-      - run: cargo run --locked --example ironcrypto -- tests/data/ironcrypto-controls-0.2.23.json 2026-10-10T00:00:00Z > ironcrypto.json
-        shell: bash
+      - run: cargo run --locked -- component --ironcrypto tests/data/ironcrypto-controls-0.2.23.json --last-modified 2026-10-10T00:00:00Z --output ironcrypto.json
       - run: python scripts/check-oscal-schema.py oscal_component_schema.json ironcrypto.json

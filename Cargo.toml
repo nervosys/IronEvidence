@@ -8,7 +8,7 @@ description = "Compliance evidence for the IronSecurity stack: OSCAL from each p
 repository = "https://github.com/nervosys/IronEvidence"
 readme = "README.md"
 keywords = ["oscal", "compliance", "nist", "evidence"]
-categories = ["cryptography"]
+categories = ["cryptography", "command-line-utilities"]
 # Not for publication until it reads every project's mappings.
 publish = false
 

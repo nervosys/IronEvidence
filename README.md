@@ -32,8 +32,17 @@ security function.
 
 ```text
 ic ontology controls --json > controls.json
-cargo run --locked --example ironcrypto -- controls.json 2026-10-10T00:00:00Z > ironcrypto.json
+ironevidence component --ironcrypto controls.json --last-modified 2026-10-10T00:00:00Z --output ironcrypto.json
+ironevidence summary --ironcrypto controls.json
 ```
+
+`component` writes the OSCAL component definition; `--framework sp800-53` or
+`--framework cmmc` limits it to one catalog. `summary` prints how many
+statements carry each status, per catalog, as JSON. The tool fetches nothing
+and does not read the clock: the timestamp is an argument, so the same input
+gives the same bytes. It exits with status 2 for wrong arguments and 1 for
+input it cannot read or refuses. From a checkout, run it as
+`cargo run --locked -- component ...`.
 
 From IronCrypto 0.2.23 this gives 12 NIST SP 800-53 statements (8 partial, 2
 not-implemented, 2 not-applicable) and 7 CMMC 2.0 statements (5 partial, 1
@@ -72,6 +81,7 @@ is downloaded, not bundled):
 curl -sfLO https://github.com/usnistgov/OSCAL/releases/download/v1.1.2/oscal_component_schema.json
 cargo run --locked --example component > component.json
 python scripts/check-oscal-schema.py oscal_component_schema.json component.json
+cargo run --locked -- component --ironcrypto tests/data/ironcrypto-controls-0.2.23.json --last-modified 2026-10-10T00:00:00Z --output ironcrypto.json
 python scripts/check-oscal-schema.py oscal_component_schema.json ironcrypto.json
 ```
 
