@@ -10,7 +10,7 @@ checksum = "8c68f7d5c500785318be5d2e838e69dfba79a4568613f656ce0cf67c4d6260a8"
 
 [[package]]
 name = "ironevidence"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "ic-json",
 ]

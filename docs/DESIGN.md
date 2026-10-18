@@ -69,7 +69,7 @@ reader is written:
    over a crate because it needs no build, can be reviewed as text, and is
    what IronCrypto's export already is. IronPrivacyGuard has written one
    (`docs/controls.json`, CMMC 2.0), and so have IronKeys and
-   IronSocketLayer.
+   IronSocketLayer. IronPKI has not yet.
 3. Done for CMMC: IPG's `docs/controls.json`. Its FIPS algorithm table
    and ATT&CK table are not controls and have no machine-readable form.
 4. Done: the `ironevidence` command reads IronCrypto's export and any

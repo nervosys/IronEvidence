@@ -1,6 +1,6 @@
 [package]
 name = "ironevidence"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
 license = "AGPL-3.0-or-later"
@@ -9,8 +9,6 @@ repository = "https://github.com/nervosys/IronEvidence"
 readme = "README.md"
 keywords = ["oscal", "compliance", "nist", "evidence"]
 categories = ["cryptography", "command-line-utilities"]
-# Not for publication until it reads every project's mappings.
-publish = false
 
 [dependencies]
 # IronCrypto's dependency-free JSON reader, for its controls export.

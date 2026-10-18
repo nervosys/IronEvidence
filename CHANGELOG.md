@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 — 2026-10-17
+
+The first published release.
+
 
 - Moved to IronCrypto 0.3.1 (`ic-json`), with the rest of the IronSecurity
   stack. The JSON reader's interface is unchanged.

@@ -4,11 +4,15 @@ Compliance evidence for the IronSecurity stack: each project's control mappings
 written as [OSCAL](https://pages.nist.gov/OSCAL/), so an assessor's tooling can
 read them.
 
-**Status: early.** IronEvidence models a component's control statements,
-writes them as an OSCAL component definition, and reads IronCrypto's control
-mappings. Its output validates against NIST's OSCAL 1.1.2 component-definition
-JSON schema. It does not yet read IronPrivacyGuard's, IronSocketLayer's or
-IronKeys' mappings. The crate is not published.
+**Status: early, 0.1.0.** IronEvidence models a component's control
+statements and writes them as an OSCAL component definition. It reads
+IronCrypto's control mappings and those of IronPrivacyGuard, IronKeys and
+IronSocketLayer. IronPKI has no mappings yet. Its output validates against
+NIST's OSCAL 1.1.2 component-definition JSON schema.
+
+```text
+cargo install ironevidence --version 0.1.0 --locked
+```
 
 ## What is here
 
@@ -61,12 +65,12 @@ one too: SP 800-53 SC-12 and SC-13 and CMMC SC.L2-3.13.10 and SC.L2-3.13.11,
 each partial or not-implemented. IronSocketLayer ships one: SP 800-53 SC-8,
 SC-8(1), SC-13 and SC-23 and CMMC SC.L2-3.13.8, 3.13.11 and 3.13.15, with
 session authenticity implemented, transmission protection partial and
-FIPS-validated cryptography not-implemented. Every project in the stack now
-has mappings. The reader is tested against IPG's file at 0.2.0, IronKeys' at
+FIPS-validated cryptography not-implemented. IronPKI is the one project in
+the stack without mappings so far. The reader is tested against IPG's file at 0.2.0, IronKeys' at
 0.1.2, IronSocketLayer's at 0.5.0 and a fictional example. Writing each file is that project's maintainers'
 work, because every entry is a claim the project makes about itself.
 
-From IronCrypto 0.2.23 this gives 12 NIST SP 800-53 statements (8 partial, 2
+From IronCrypto 0.2.23, and unchanged in 0.3.1, this gives 12 NIST SP 800-53 statements (8 partial, 2
 not-implemented, 2 not-applicable) and 7 CMMC 2.0 statements (5 partial, 1
 not-implemented, 1 not-applicable). None is `implemented`. Each statement
 opens with how the control bears on a library, keeps IronCrypto's gap or
