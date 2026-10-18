@@ -14,7 +14,7 @@ publish = false
 
 [dependencies]
 # IronCrypto's dependency-free JSON reader, for its controls export.
-ic-json = { version = ">=0.2.23, <0.3" }
+ic-json = { version = ">=0.3.1, <0.4" }
 
 [lints.rust]
 unsafe_code = "forbid"

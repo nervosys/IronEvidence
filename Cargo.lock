@@ -4,9 +4,9 @@ version = 4
 
 [[package]]
 name = "ic-json"
-version = "0.2.23"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ad89c7a87fb94e419942b26b57e1b77ec1e62c0ae877a9d703fda1d08478e87"
+checksum = "8c68f7d5c500785318be5d2e838e69dfba79a4568613f656ce0cf67c4d6260a8"
 
 [[package]]
 name = "ironevidence"

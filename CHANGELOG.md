@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Moved to IronCrypto 0.3.1 (`ic-json`), with the rest of the IronSecurity
+  stack. The JSON reader's interface is unchanged.
 - Added the shared mappings format `ironsecurity-controls/1`
   (`docs/FORMAT.md`) and its reader, `controls::Mappings`. A partial control
   must name its gap, a met or partial control its evidence, and a file that
